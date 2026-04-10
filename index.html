@@ -1,104 +1,350 @@
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta http-equiv="cache-control" content="max-age=0" />
-  <meta http-equiv="cache-control" content="no-cache" />
-  <meta http-equiv="expires" content="0" />
-  <meta http-equiv="pragma" content="no-cache" />
-  <title>CV Lê Thạch Lâm</title>
+  <title>CapMoney — Money Tracker</title>
+  <meta name="description" content="CapMoney — Ứng dụng quản lý thu chi cá nhân đơn giản, nhanh chóng và trực quan trên iOS.">
+  <meta name="author" content="Lê Thạch Lâm">
+
+  <meta property="og:title" content="CapMoney — Money Tracker">
+  <meta property="og:description" content="Quản lý thu chi cá nhân đơn giản, nhanh chóng và trực quan.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bigdog156.github.io">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-
-
-  html
-  {
-    font-size: 62.5%;
-  }
-
-  body
-  {
-    margin: 0;
-    padding: 0;
-    font-size: 1.6rem;
-    color: #353535;
-    background: linear-gradient(to bottom, #ccc, #fff 30%);
-    background-repeat: no-repeat;
-  }
-
-  h1,h2
-  {
-    font-family: 'Montserrat', sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    text-transform: uppercase;
-  }
-    h2 
-    {
-        font-weight: normal;
-        margin:20rem 0 1rem ;   
+    :root {
+      --brand: #10b981;
+      --brand-dark: #059669;
+      --text: #0f172a;
+      --muted: #64748b;
+      --bg: #ffffff;
+      --soft: #f8fafc;
+      --border: #e2e8f0;
     }
 
-  h1
-  {
-    margin: 20rem 0 1rem;
-    font-size: 3rem;
-  }
-    h3
-  {
-    font-family: 'Montserrat', sans-serif;
-    margin-left: 5rem;
-    margin-top:2rem;
-    text-transform: uppercase;
-  }
-  h3
-  {
-    /*font-weight: normal;*/
-    font-size: 1.4rem;
-  }
-  p{
-    margin-left: 5rem;
-  }
-  #subitem
-  {
-      margin-left: 6rem;
-  }
-  </style>
+    * { box-sizing: border-box; }
 
+    html { font-size: 62.5%; scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 1.6rem;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--brand-dark); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2.4rem;
+    }
+
+    /* Header */
+    header {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: saturate(180%) blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 2rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--brand); }
+    nav a {
+      margin-left: 2.4rem;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 1.5rem;
+    }
+    nav a:hover { color: var(--text); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      padding: 9rem 0 7rem;
+      background: linear-gradient(180deg, var(--soft) 0%, #ffffff 100%);
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 5.6rem;
+      font-weight: 800;
+      margin: 0 0 1.6rem;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .hero h1 span { color: var(--brand); }
+    .hero p.lead {
+      font-size: 2rem;
+      color: var(--muted);
+      max-width: 64rem;
+      margin: 0 auto 3.2rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1.4rem 2.8rem;
+      background: var(--text);
+      color: #fff;
+      border-radius: 1.2rem;
+      font-weight: 600;
+      font-size: 1.6rem;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+    .btn:hover { background: #000; text-decoration: none; transform: translateY(-2px); }
+    .btn svg { width: 2.2rem; height: 2.2rem; }
+
+    /* Sections */
+    section { padding: 8rem 0; }
+    section h2 {
+      font-size: 3.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 0 0 1.2rem;
+      text-align: center;
+    }
+    section p.section-lead {
+      text-align: center;
+      color: var(--muted);
+      font-size: 1.8rem;
+      max-width: 60rem;
+      margin: 0 auto 5rem;
+    }
+
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+      gap: 2.4rem;
+    }
+    .feature {
+      padding: 3.2rem 2.8rem;
+      background: var(--soft);
+      border: 1px solid var(--border);
+      border-radius: 1.6rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .feature:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+    .feature .icon {
+      width: 4.8rem;
+      height: 4.8rem;
+      border-radius: 1.2rem;
+      background: var(--brand);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+      margin-bottom: 1.6rem;
+    }
+    .feature h3 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin: 0 0 0.8rem;
+    }
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.5rem;
+    }
+
+    /* About */
+    #about { background: var(--soft); }
+    .about-content {
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    .about-content p {
+      font-size: 1.7rem;
+      color: var(--muted);
+      margin: 0 0 1.6rem;
+    }
+    .about-content strong { color: var(--text); }
+
+    /* Contact */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+      gap: 2rem;
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    .contact-card {
+      padding: 2.8rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 1.6rem;
+      text-align: center;
+    }
+    .contact-card .label {
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+    .contact-card .value {
+      font-size: 1.7rem;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    /* Footer */
+    footer {
+      padding: 4rem 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 1.4rem;
+    }
+    footer a { color: var(--muted); margin: 0 1.2rem; }
+
+    @media (max-width: 640px) {
+      .hero { padding: 6rem 0 5rem; }
+      .hero h1 { font-size: 4rem; }
+      .hero p.lead { font-size: 1.7rem; }
+      section { padding: 6rem 0; }
+      section h2 { font-size: 2.8rem; }
+      nav a { margin-left: 1.6rem; font-size: 1.4rem; }
+    }
+  </style>
 </head>
 <body>
-    <h2>LÊ THẠCH LÂM</h2>
-    <h3>Thông tin cá nhân</h3>
-    <p>Địa chỉ hiện tại: KTX Khu A, Linh Trung, Thủ Đức</p>
-    <p>Năm sinh: 20/3/1998</p>
-    <p>Số điện thoại: 0966951930 </p>
-    <p>Trường Đại học Công nghệ Thông tin ĐHQG HCM</p>
-    <p>Ngành: Khoa học Máy tính</p>
-    <h3>Kỹ năng bản thân</h3>
-    <p>Ngôn ngữ lập trình: C++, Python, Java, Dart</p>
-    <p>Có kiến thức về máy học, xử lí ảnh, Deep learning</p>
-    <p>Cấu trúc dữ liệu và giải thuật, lập trình hướng đối tượng</p>
-    <p>Các ứng dụng đã thực hiện:</p>
-    <p id="subitem">Ứng dụng điểm danh bằng khuôn mặt: Sử dụng Deep learning, Flask python</p>
-    <p id="subitem">Web tìm kiếm tour du lịch trong nước: Truy vấn TF/IDF, cosine</p>
-    <p id="subitem">Nhận diện biển báo giao thông</p>
-    <p id="subitem">Nhận diện bệnh u não: Pre-train model VGG-16</p>
-    <p id="subitem">Ứng dụng kiểm tra comments Youtube Spam: Flask python, Flutter</p>
-    <h3>Kinh nghiệm làm việc</h3>
-    <p>Tháng 6/2019 - 9/2019 - Thực tập Backend Công ty VIHAT</p>
-    <p>Tháng 10/2019 - 3/2020 - Fresher Computer vision - VNPT</p>
-    <p>Tháng 3/2020 - 5/2020 - Partime Mobile Flutter - 200Lab </p>
-    <!--<div class = "container">-->
-    <!--    <p>SketchNote & Mindmap</p>-->
-    <!--</div>-->
-    <!--<h3>Hãy học và ghi chú theo phương pháp thông minh nhất</h2>-->
-    <!--<h1>Khoá học SketchNote kết hợp Mindmap</h1>-->
-    <!--<h3>Comming soon</h3>-->
-    
-    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+  <header>
+    <div class="container">
+      <div class="logo">Cap<span>Money</span></div>
+      <nav>
+        <a href="#features">Tính năng</a>
+        <a href="#about">Giới thiệu</a>
+        <a href="#contact">Liên hệ</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Quản lý thu chi<br><span>đơn giản mỗi ngày</span></h1>
+      <p class="lead">CapMoney giúp bạn ghi chép, phân loại và nắm rõ dòng tiền cá nhân một cách nhanh chóng, trực quan ngay trên iPhone.</p>
+      <a class="btn" href="https://apps.apple.com/vn/app/capmoney-money-tracker/id6757230737" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+        Tải trên App Store
+      </a>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="container">
+      <h2>Tính năng nổi bật</h2>
+      <p class="section-lead">Mọi thứ bạn cần để theo dõi tài chính cá nhân, gọn trong một ứng dụng.</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="icon">₫</div>
+          <h3>Ghi chép nhanh</h3>
+          <p>Thêm giao dịch thu chi chỉ trong vài giây với giao diện tối giản, thao tác mượt mà.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">◎</div>
+          <h3>Phân loại danh mục</h3>
+          <p>Tổ chức giao dịch theo danh mục ăn uống, đi lại, mua sắm, hóa đơn… dễ dàng tùy chỉnh.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">📊</div>
+          <h3>Báo cáo trực quan</h3>
+          <p>Biểu đồ rõ ràng giúp bạn nắm được dòng tiền theo ngày, tuần, tháng và xu hướng chi tiêu.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🎯</div>
+          <h3>Ngân sách thông minh</h3>
+          <p>Đặt hạn mức cho từng danh mục và nhận cảnh báo khi bạn sắp vượt ngân sách.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">🔒</div>
+          <h3>Bảo mật riêng tư</h3>
+          <p>Dữ liệu của bạn được lưu an toàn trên thiết bị, không chia sẻ với bên thứ ba.</p>
+        </div>
+        <div class="feature">
+          <div class="icon">✨</div>
+          <h3>Giao diện tinh gọn</h3>
+          <p>Thiết kế iOS chuẩn, hỗ trợ Dark Mode, sử dụng thoải mái mỗi ngày.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <h2>Về nhà phát triển</h2>
+      <p class="section-lead">CapMoney được xây dựng bởi một lập trình viên độc lập, với mong muốn tạo ra công cụ tài chính cá nhân gọn nhẹ và thật sự hữu ích.</p>
+
+      <div class="about-content">
+        <p><strong>Lê Thạch Lâm</strong> — Cử nhân Khoa học Máy tính, Trường Đại học Công nghệ Thông tin (ĐHQG HCM).</p>
+        <p>Với kinh nghiệm phát triển phần mềm trải dài từ Backend (VIHAT), Computer Vision (VNPT) đến Mobile Flutter (200Lab), cùng nền tảng vững về Machine Learning, Deep Learning và lập trình hướng đối tượng, Lâm tập trung xây dựng những ứng dụng tối giản, tốc độ, tôn trọng người dùng.</p>
+        <p>CapMoney là dự án cá nhân hướng tới cộng đồng người Việt muốn quản lý chi tiêu hàng ngày mà không cần công cụ phức tạp.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <h2>Liên hệ & Hỗ trợ</h2>
+      <p class="section-lead">Mọi phản hồi, báo lỗi hoặc góp ý về CapMoney đều được trân trọng.</p>
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="label">Email hỗ trợ</div>
+          <div class="value"><a href="mailto:thachlam156@gmail.com">thachlam156@gmail.com</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="label">Threads</div>
+          <div class="value"><a href="https://www.threads.net/@thachlam156" target="_blank" rel="noopener">@thachlam156</a></div>
+        </div>
+        <div class="contact-card">
+          <div class="label">App Store</div>
+          <div class="value"><a href="https://apps.apple.com/vn/app/capmoney-money-tracker/id6757230737" target="_blank" rel="noopener">CapMoney trên App Store</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div>© <span id="year"></span> CapMoney — Lê Thạch Lâm. All rights reserved.</div>
+      <div style="margin-top: 1rem;">
+        <a href="mailto:thachlam156@gmail.com">Support</a>
+        <a href="https://apps.apple.com/vn/app/capmoney-money-tracker/id6757230737" target="_blank" rel="noopener">App Store</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
