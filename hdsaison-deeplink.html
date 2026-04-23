@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HDSaison Deeplink Test</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 16px;
+    background: #f5f5f7;
+    color: #1d1d1f;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 16px; }
+  .inputs {
+    background: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .inputs label {
+    display: block;
+    font-size: 12px;
+    color: #555;
+    margin-top: 8px;
+  }
+  .inputs input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    border: 1px solid #d0d0d5;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .item .title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .item .url {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: #0066cc;
+    word-break: break-all;
+    margin-bottom: 10px;
+  }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-open { background: #0066cc; color: #fff; }
+  .btn-intent { background: #34c759; color: #fff; }
+  .btn-copy { background: #e5e5ea; color: #1d1d1f; }
+  .status {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+  }
+  .ok { background: #d4f7dc; color: #1a7f37; }
+  .warn { background: #fff3cd; color: #8a6d00; }
+  .err { background: #fde2e4; color: #b42318; }
+</style>
+</head>
+<body>
+  <h1>HDSaison Deeplink Test (Android)</h1>
+  <div class="sub">Bấm <b>Mở</b> để test scheme trực tiếp, hoặc <b>Intent</b> để dùng Android intent:// (fallback tốt hơn).</div>
+
+  <div class="inputs">
+    <label>ID đơn (loan id)</label>
+    <input id="loanId" value="123456">
+    <label>ID thẻ (card id)</label>
+    <input id="cardId" value="789">
+    <label>ID gói vay (loan-package id)</label>
+    <input id="loanPkgId" value="LP001">
+    <label>ID gói thẻ (card-package id)</label>
+    <input id="cardPkgId" value="CP001">
+    <label>VIP code</label>
+    <input id="vipCode" value="VIP2026">
+  </div>
+
+  <div id="list"></div>
+
+<script>
+  const items = [
+    { t: "1. Danh sách đơn KH",            u: () => `hdsaison://loans`,                                                          s: "ok" },
+    { t: "2. Chi tiết đơn",                u: v => `hdsaison://loans/${v.loanId}`,                                               s: "ok" },
+    { t: "3. Danh sách thẻ tín dụng",      u: () => `hdsaison://cards`,                                                          s: "ok" },
+    { t: "4. Chi tiết thẻ tín dụng",       u: v => `hdsaison://cards/${v.cardId}`,                                               s: "ok" },
+    { t: "5. Tab Vay tiền mặt",            u: () => `hdsaison://home?tab=cashLoan`,                                              s: "ok" },
+    { t: "6. Tab Thẻ tín dụng",            u: () => `hdsaison://home?tab=creditCard`,                                            s: "ok" },
+    { t: "7. Chọn gói vay (apply)",        u: v => `hdsaison://loan-package/${v.loanPkgId}?screenMode=edit`,                     s: "ok" },
+    { t: "8. Đăng ký mở thẻ (apply)",      u: v => `hdsaison://card-package/${v.cardPkgId}`,                                     s: "warn", note: "Thiếu screenMode=edit — hiện default = view" },
+    { t: "8b. Đăng ký mở thẻ + edit",      u: v => `hdsaison://card-package/${v.cardPkgId}?screenMode=edit`,                     s: "ok",   note: "Thử thêm screenMode=edit" },
+    { t: "9. Tab Vay + auto VIP",          u: v => `hdsaison://home?tab=cashLoan&vipCode=${v.vipCode}`,                          s: "ok" },
+    { t: "10. Tab Thẻ + auto VIP",         u: v => `hdsaison://home?tab=creditCard&vipCode=${v.vipCode}`,                        s: "ok" },
+    { t: "11. Simulation sản phẩm vay",    u: v => `hdsaison://loan-package/${v.loanPkgId}?screenMode=view`,                     s: "err",  note: "Chưa hỗ trợ — cần app implement screenMode=view" },
+    { t: "12. Simulation sản phẩm thẻ",    u: v => `hdsaison://card-package/${v.cardPkgId}?screenMode=view`,                     s: "warn", note: "Default view — trùng URL với #8 nếu không có screenMode" },
+  ];
+
+  function vals() {
+    return {
+      loanId: document.getElementById("loanId").value.trim() || "123",
+      cardId: document.getElementById("cardId").value.trim() || "123",
+      loanPkgId: document.getElementById("loanPkgId").value.trim() || "LP001",
+      cardPkgId: document.getElementById("cardPkgId").value.trim() || "CP001",
+      vipCode: document.getElementById("vipCode").value.trim() || "VIP",
+    };
+  }
+
+  function toIntent(url) {
+    // hdsaison://path?query  ->  intent://path?query#Intent;scheme=hdsaison;package=<pkg>;end
+    const m = url.match(/^hdsaison:\/\/(.*)$/);
+    if (!m) return url;
+    return `intent://${m[1]}#Intent;scheme=hdsaison;end`;
+  }
+
+  function statusBadge(s) {
+    if (s === "ok") return `<span class="status ok">OK</span>`;
+    if (s === "warn") return `<span class="status warn">WARN</span>`;
+    return `<span class="status err">N/A</span>`;
+  }
+
+  function render() {
+    const v = vals();
+    const list = document.getElementById("list");
+    list.innerHTML = items.map((it, i) => {
+      const url = it.u(v);
+      const intentUrl = toIntent(url);
+      return `
+        <div class="item">
+          <div class="title">${it.t} ${statusBadge(it.s)}</div>
+          <div class="url" id="url-${i}">${url}</div>
+          ${it.note ? `<div style="font-size:12px;color:#8a6d00;margin-bottom:8px">⚠️ ${it.note}</div>` : ""}
+          <div class="actions">
+            <a class="btn btn-open" href="${url}">Mở</a>
+            <a class="btn btn-intent" href="${intentUrl}">Intent</a>
+            <button class="btn btn-copy" data-url="${url}">Copy</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    list.querySelectorAll(".btn-copy").forEach(b => {
+      b.addEventListener("click", () => {
+        navigator.clipboard.writeText(b.dataset.url);
+        b.textContent = "Copied!";
+        setTimeout(() => b.textContent = "Copy", 1200);
+      });
+    });
+  }
+
+  document.querySelectorAll(".inputs input").forEach(i => i.addEventListener("input", render));
+  render();
+</script>
+</body>
+</html>
