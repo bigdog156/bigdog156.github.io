@@ -116,6 +116,7 @@
     { t: "11. Explore — Tab Thẻ tín dụng",      u: () => `hdsaison://explore?tab=creditCard`,                                s: "warn", note: "Auth optional — guest mode được chấp nhận" },
     { t: "12a. Explore — Vay tiền mặt + VIP",   u: v => `hdsaison://explore?tab=cashLoan&vipCode=${v.vipCode}`,              s: "warn", note: "Auth optional — Explore tab + VIP code" },
     { t: "12b. Explore — Thẻ tín dụng + VIP",   u: v => `hdsaison://explore?tab=creditCard&vipCode=${v.vipCode}`,            s: "warn", note: "Auth optional — Explore tab + VIP code" },
+    { t: "13. Mở thẻ (đăng ký)",                u: v => `hdsaison://open-card/${v.cardPkgId}`,                               s: "ok",   note: "Auth required — CreditCardDetailScreen edit mode (đăng ký) ({id} = cardPackageId)" },
   ];
 
   function vals() {
