@@ -36,6 +36,55 @@
     border-radius: 8px;
     font-size: 14px;
   }
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    margin-top: 10px;
+    background: #f0f4ff;
+    border: 1px solid #d6e0ff;
+    border-radius: 8px;
+  }
+  .toggle-row .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d1d1f;
+  }
+  .toggle-row .hint {
+    font-size: 11px;
+    color: #666;
+    margin-top: 2px;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #ccc;
+    border-radius: 26px;
+    transition: .2s;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: .2s;
+  }
+  .switch input:checked + .slider { background: #34c759; }
+  .switch input:checked + .slider:before { transform: translateX(18px); }
   .item {
     background: #fff;
     border-radius: 12px;
@@ -96,27 +145,33 @@
     <input id="cardPkgId" value="CP001">
     <label>VIP code</label>
     <input id="vipCode" value="VIP2026">
+
+    <div class="toggle-row">
+      <div>
+        <div class="label">Yêu cầu login (isLogin=true)</div>
+        <div class="hint">Bật để tự động thêm <code>isLogin=true</code> vào mọi deeplink</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="isLogin" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 
   <div id="list"></div>
 
 <script>
   const items = [
-    { t: "1. Danh sách đơn",                    u: () => `hdsaison://loans`,                                                 s: "ok",   note: "Auth required — ApplicationHistoryScreen" },
-    { t: "2. Chi tiết đơn",                     u: v => `hdsaison://loans/${v.loanId}`,                                      s: "ok",   note: "Auth required — {id} = applicationId" },
-    { t: "3. Thẻ tín dụng của KH",              u: () => `hdsaison://cards`,                                                 s: "ok",   note: "Auth required — UserCreditCardScreen(initialIndex: 0)" },
-    { t: "4. Chi tiết thẻ",                     u: v => `hdsaison://cards/${v.cardId}`,                                      s: "ok",   note: "Auth required — {id} = loanPackageId" },
-    { t: "5. Chọn gói vay / Đăng ký vay",       u: v => `hdsaison://loan-package/${v.loanPkgId}`,                            s: "ok",   note: "Auth required — LoanPackageDetailScreen, luôn edit mode ({id} = packageId)" },
-    { t: "6. Chi tiết gói thẻ",                 u: v => `hdsaison://card-package/${v.cardPkgId}`,                            s: "ok",   note: "Auth required — CreditCardDetailScreen default view mode ({id} = cardPackageId)" },
-    { t: "7. Home — Tab Vay tiền mặt",          u: () => `hdsaison://home?tab=cashLoan`,                                     s: "ok",   note: "Auth required — Home tab index 0" },
-    { t: "8. Home — Tab Thẻ tín dụng",          u: () => `hdsaison://home?tab=creditCard`,                                   s: "ok",   note: "Auth required — Home tab index 1" },
-    { t: "9a. Home — Vay tiền mặt + VIP",       u: v => `hdsaison://home?tab=cashLoan&vipCode=${v.vipCode}`,                 s: "ok",   note: "Auth required — auto-fill & search VIP code (lưu SharedPref trước mount)" },
-    { t: "9b. Home — Thẻ tín dụng + VIP",       u: v => `hdsaison://home?tab=creditCard&vipCode=${v.vipCode}`,               s: "ok",   note: "Auth required — auto-fill & search VIP code" },
-    { t: "10. Explore — Tab Vay tiền mặt",      u: () => `hdsaison://explore?tab=cashLoan`,                                  s: "warn", note: "Auth optional — guest mode được chấp nhận" },
-    { t: "11. Explore — Tab Thẻ tín dụng",      u: () => `hdsaison://explore?tab=creditCard`,                                s: "warn", note: "Auth optional — guest mode được chấp nhận" },
-    { t: "12a. Explore — Vay tiền mặt + VIP",   u: v => `hdsaison://explore?tab=cashLoan&vipCode=${v.vipCode}`,              s: "warn", note: "Auth optional — Explore tab + VIP code" },
-    { t: "12b. Explore — Thẻ tín dụng + VIP",   u: v => `hdsaison://explore?tab=creditCard&vipCode=${v.vipCode}`,            s: "warn", note: "Auth optional — Explore tab + VIP code" },
-    { t: "13. Mở thẻ (đăng ký)",                u: v => `hdsaison://open-card/${v.cardPkgId}`,                               s: "ok",   note: "Auth required — CreditCardDetailScreen edit mode (đăng ký) ({id} = cardPackageId)" },
+    { t: "1. Danh sách đơn của khách hàng",        u: () => `hdsaison://loans`,                                   note: "ApplicationHistoryScreen" },
+    { t: "2. Chi tiết đơn",                        u: v => `hdsaison://loans/${v.loanId}`,                        note: "{applicationId}" },
+    { t: "3. Thẻ tín dụng của khách hàng",         u: () => `hdsaison://cards`,                                   note: "UserCreditCardScreen" },
+    { t: "4. Chi tiết thẻ tín dụng",               u: v => `hdsaison://cards/${v.cardId}`,                        note: "{id}" },
+    { t: "5. Tab Vay tiền mặt — Chọn gói vay",     u: () => `hdsaison://home?tab=cashLoan`,                       note: "Home tab cashLoan" },
+    { t: "6. Tab Thẻ tín dụng — Đăng ký mở thẻ",   u: () => `hdsaison://home?tab=creditCard`,                     note: "Home tab creditCard" },
+    { t: "7. Tab Vay tiền mặt + VIP code",         u: v => `hdsaison://home?tab=cashLoan&vipCode=${v.vipCode}`,   note: "Auto-fill & search mã VIP" },
+    { t: "8. Tab Thẻ tín dụng + VIP code",         u: v => `hdsaison://home?tab=creditCard&vipCode=${v.vipCode}`, note: "Auto-fill & search mã VIP" },
+    { t: "9. Simulation sản phẩm vay chỉ định",    u: v => `hdsaison://loan-package/${v.loanPkgId}`,              note: "{packageId} — LoanPackageDetailScreen" },
+    { t: "10. Simulation sản phẩm thẻ chỉ định",   u: v => `hdsaison://card-package/${v.cardPkgId}`,              note: "{packageId} — CreditCardDetailScreen" },
   ];
 
   function vals() {
@@ -130,29 +185,29 @@
   }
 
   function toIntent(url) {
-    // hdsaison://path?query  ->  intent://path?query#Intent;scheme=hdsaison;package=<pkg>;end
     const m = url.match(/^hdsaison:\/\/(.*)$/);
     if (!m) return url;
     return `intent://${m[1]}#Intent;scheme=hdsaison;end`;
   }
 
-  function statusBadge(s) {
-    if (s === "ok") return `<span class="status ok">OK</span>`;
-    if (s === "warn") return `<span class="status warn">WARN</span>`;
-    return `<span class="status err">N/A</span>`;
+  function withLogin(url, isLogin) {
+    if (!isLogin) return url;
+    const sep = url.includes("?") ? "&" : "?";
+    return `${url}${sep}isLogin=true`;
   }
 
   function render() {
     const v = vals();
+    const isLogin = document.getElementById("isLogin").checked;
     const list = document.getElementById("list");
     list.innerHTML = items.map((it, i) => {
-      const url = it.u(v);
+      const url = withLogin(it.u(v), isLogin);
       const intentUrl = toIntent(url);
       return `
         <div class="item">
-          <div class="title">${it.t} ${statusBadge(it.s)}</div>
+          <div class="title">${it.t} <span class="status ok">Login</span></div>
           <div class="url" id="url-${i}">${url}</div>
-          ${it.note ? `<div style="font-size:12px;color:#8a6d00;margin-bottom:8px">⚠️ ${it.note}</div>` : ""}
+          ${it.note ? `<div style="font-size:12px;color:#666;margin-bottom:8px">${it.note}</div>` : ""}
           <div class="actions">
             <a class="btn btn-open" href="${url}">Mở</a>
             <a class="btn btn-intent" href="${intentUrl}">Intent</a>
@@ -172,6 +227,7 @@
   }
 
   document.querySelectorAll(".inputs input").forEach(i => i.addEventListener("input", render));
+  document.getElementById("isLogin").addEventListener("change", render);
   render();
 </script>
 </body>
