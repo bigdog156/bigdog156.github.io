@@ -172,6 +172,7 @@
     { t: "8. Tab Thẻ tín dụng + VIP code",         u: v => `hdsaison://home?tab=creditCard&vipCode=${v.vipCode}`, note: "Auto-fill & search mã VIP" },
     { t: "9. Simulation sản phẩm vay chỉ định",    u: v => `hdsaison://loan-package/${v.loanPkgId}`,              note: "{packageId} — LoanPackageDetailScreen" },
     { t: "10. Simulation sản phẩm thẻ chỉ định",   u: v => `hdsaison://card-package/${v.cardPkgId}`,              note: "{packageId} — CreditCardDetailScreen" },
+    { t: "11. Mở thẻ (đăng ký)",                   u: v => `hdsaison://open-card/${v.cardPkgId}`,                 note: "{id} = cardPackageId — CreditCardDetailScreen edit mode" },
   ];
 
   function vals() {
