@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mở HD SAISON</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff6b00 0%, #ff9500 100%);
+    color: #1d1d1f;
+    padding: 24px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0,0,0,.2);
+    text-align: center;
+  }
+  h1 { font-size: 22px; margin: 0 0 8px; }
+  p { color: #555; font-size: 14px; line-height: 1.5; margin: 0 0 20px; }
+  .btn {
+    display: inline-block;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    background: #ff6b00;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .btn.secondary { background: #f0f0f5; color: #1d1d1f; }
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #f0f0f5;
+    border-top-color: #ff6b00;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden { display: none; }
+  .platform { font-size: 12px; color: #999; margin-top: 12px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div id="loading">
+      <div class="spinner"></div>
+      <h1>Đang mở HD SAISON…</h1>
+      <p>Nếu app đã được cài đặt, bạn sẽ được chuyển vào ứng dụng. Nếu chưa, chúng tôi sẽ mở cửa hàng để tải app.</p>
+    </div>
+
+    <div id="manual" class="hidden">
+      <h1>Mở HD SAISON</h1>
+      <p>App không tự mở? Bấm nút bên dưới để thử lại hoặc tải về.</p>
+      <a id="btnOpen" class="btn" href="#">Mở trong app</a>
+      <a id="btnStore" class="btn secondary" href="#">Tải về từ Store</a>
+      <div class="platform" id="platformInfo"></div>
+    </div>
+  </div>
+
+<script>
+  const DEEPLINK_DEFAULT = "hdsaison://home?tab=cashLoan&isLogin=true";
+  const IOS_STORE_URL = "https://apps.apple.com/vn/app/hd-saison/id1589425903";
+  const ANDROID_PKG = "vn.hdsaison.app";
+
+  const params = new URLSearchParams(location.search);
+  const deeplink = params.get("to") || DEEPLINK_DEFAULT;
+
+  function detectPlatform() {
+    const ua = navigator.userAgent || navigator.vendor || "";
+    if (/android/i.test(ua)) return "android";
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return "ios";
+    return "other";
+  }
+
+  function toIntentAndroid(scheme, pkg) {
+    const m = scheme.match(/^hdsaison:\/\/(.*)$/);
+    if (!m) return scheme;
+    const fallback = encodeURIComponent(`market://details?id=${pkg}`);
+    return `intent://${m[1]}#Intent;scheme=hdsaison;package=${pkg};S.browser_fallback_url=${fallback};end`;
+  }
+
+  function toItmsApps(httpsUrl) {
+    return httpsUrl.replace(/^https?:\/\//, "itms-apps://");
+  }
+
+  function showManual(platform) {
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("manual").classList.remove("hidden");
+
+    const btnOpen = document.getElementById("btnOpen");
+    const btnStore = document.getElementById("btnStore");
+    document.getElementById("platformInfo").textContent = "Thiết bị: " + platform;
+
+    if (platform === "android") {
+      btnOpen.href = toIntentAndroid(deeplink, ANDROID_PKG);
+      btnStore.href = `market://details?id=${ANDROID_PKG}`;
+    } else if (platform === "ios") {
+      btnOpen.href = deeplink;
+      btnStore.href = toItmsApps(IOS_STORE_URL);
+    } else {
+      btnOpen.href = deeplink;
+      btnStore.href = IOS_STORE_URL;
+    }
+  }
+
+  function tryOpen() {
+    const platform = detectPlatform();
+
+    if (platform === "android") {
+      window.location.href = toIntentAndroid(deeplink, ANDROID_PKG);
+      setTimeout(() => showManual(platform), 2500);
+      return;
+    }
+
+    if (platform === "ios") {
+      const start = Date.now();
+      const storeUrl = toItmsApps(IOS_STORE_URL);
+      const timer = setTimeout(() => {
+        if (Date.now() - start < 2000 && !document.hidden) {
+          window.location.href = storeUrl;
+        }
+      }, 1500);
+      window.addEventListener("pagehide", () => clearTimeout(timer), { once: true });
+      window.location.href = deeplink;
+      setTimeout(() => showManual(platform), 3000);
+      return;
+    }
+
+    showManual(platform);
+  }
+
+  tryOpen();
+</script>
+</body>
+</html>
