@@ -117,6 +117,7 @@
   }
   .btn-open { background: #0066cc; color: #fff; }
   .btn-intent { background: #34c759; color: #fff; }
+  .btn-store { background: #ff9500; color: #fff; }
   .btn-copy { background: #e5e5ea; color: #1d1d1f; }
   .status {
     display: inline-block;
@@ -132,7 +133,7 @@
 </head>
 <body>
   <h1>HDSaison Deeplink Test (Android)</h1>
-  <div class="sub">Bấm <b>Mở</b> để test scheme trực tiếp, hoặc <b>Intent</b> để dùng Android intent:// (fallback tốt hơn).</div>
+  <div class="sub">Bấm <b>Mở</b> để test scheme trực tiếp, <b>Intent</b> để dùng Android intent://, hoặc <b>Store</b> để test khi app chưa cài (tự bật Play Store).</div>
 
   <div class="inputs">
     <label>ID đơn (loan id)</label>
@@ -145,6 +146,8 @@
     <input id="cardPkgId" value="CP001">
     <label>VIP code</label>
     <input id="vipCode" value="VIP2026">
+    <label>Package name Android (để fallback Play Store)</label>
+    <input id="pkgName" value="vn.hdsaison.app" placeholder="vd: vn.hdsaison.app">
 
     <div class="toggle-row">
       <div>
@@ -181,6 +184,7 @@
       loanPkgId: document.getElementById("loanPkgId").value.trim() || "LP001",
       cardPkgId: document.getElementById("cardPkgId").value.trim() || "CP001",
       vipCode: document.getElementById("vipCode").value.trim() || "VIP",
+      pkgName: document.getElementById("pkgName").value.trim() || "vn.hdsaison.app",
     };
   }
 
@@ -188,6 +192,13 @@
     const m = url.match(/^hdsaison:\/\/(.*)$/);
     if (!m) return url;
     return `intent://${m[1]}#Intent;scheme=hdsaison;end`;
+  }
+
+  function toIntentWithStore(url, pkgName) {
+    const m = url.match(/^hdsaison:\/\/(.*)$/);
+    if (!m) return url;
+    const fallback = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkgName}`);
+    return `intent://${m[1]}#Intent;scheme=hdsaison;package=${pkgName};S.browser_fallback_url=${fallback};end`;
   }
 
   function withLogin(url, isLogin) {
@@ -203,6 +214,7 @@
     list.innerHTML = items.map((it, i) => {
       const url = withLogin(it.u(v), isLogin);
       const intentUrl = toIntent(url);
+      const storeUrl = toIntentWithStore(url, v.pkgName);
       return `
         <div class="item">
           <div class="title">${it.t} <span class="status ok">Login</span></div>
@@ -211,6 +223,7 @@
           <div class="actions">
             <a class="btn btn-open" href="${url}">Mở</a>
             <a class="btn btn-intent" href="${intentUrl}">Intent</a>
+            <a class="btn btn-store" href="${storeUrl}">Store</a>
             <button class="btn btn-copy" data-url="${url}">Copy</button>
           </div>
         </div>
