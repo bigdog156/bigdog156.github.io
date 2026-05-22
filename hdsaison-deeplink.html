@@ -118,7 +118,6 @@
   .btn-open { background: #0066cc; color: #fff; }
   .btn-intent { background: #34c759; color: #fff; }
   .btn-store { background: #ff9500; color: #fff; }
-  .btn-ios { background: #000; color: #fff; }
   .btn-copy { background: #e5e5ea; color: #1d1d1f; }
   .status {
     display: inline-block;
@@ -134,7 +133,7 @@
 </head>
 <body>
   <h1>HDSaison Deeplink Test (Android)</h1>
-  <div class="sub">Bấm <b>Mở</b> test scheme, <b>Intent</b> dùng Android intent://, <b>Store</b> fallback Play Store (Android), <b>iOS</b> fallback App Store (iOS).</div>
+  <div class="sub">Bấm <b>Mở</b> test scheme, <b>Intent</b> dùng Android intent://, <b>Store</b> tự detect platform → fallback Play Store (Android) hoặc App Store (iOS) nếu chưa cài app.</div>
 
   <div class="inputs">
     <label>ID đơn (loan id)</label>
@@ -192,19 +191,35 @@
     };
   }
 
-  function openIosWithFallback(schemeUrl, storeUrl) {
-    if (!storeUrl) {
-      alert("Vui lòng nhập iOS App Store URL trước (cần numeric App ID).");
+  function detectPlatform() {
+    const ua = navigator.userAgent || navigator.vendor || "";
+    if (/android/i.test(ua)) return "android";
+    if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return "ios";
+    return "other";
+  }
+
+  function openWithStoreFallback(schemeUrl, intentStoreUrl, iosStoreUrl) {
+    const platform = detectPlatform();
+    if (platform === "android") {
+      window.location.href = intentStoreUrl;
       return;
     }
-    const start = Date.now();
-    const timer = setTimeout(() => {
-      if (Date.now() - start < 2000 && !document.hidden) {
-        window.location.href = storeUrl;
+    if (platform === "ios") {
+      if (!iosStoreUrl) {
+        alert("Vui lòng nhập iOS App Store URL trước (cần numeric App ID).");
+        return;
       }
-    }, 1500);
-    window.addEventListener("pagehide", () => clearTimeout(timer), { once: true });
-    window.location.href = schemeUrl;
+      const start = Date.now();
+      const timer = setTimeout(() => {
+        if (Date.now() - start < 2000 && !document.hidden) {
+          window.location.href = iosStoreUrl;
+        }
+      }, 1500);
+      window.addEventListener("pagehide", () => clearTimeout(timer), { once: true });
+      window.location.href = schemeUrl;
+      return;
+    }
+    alert("Tính năng fallback Store chỉ hoạt động trên Android/iOS. Đang ở: " + (navigator.userAgent || "unknown"));
   }
 
   function toIntent(url) {
@@ -242,17 +257,17 @@
           <div class="actions">
             <a class="btn btn-open" href="${url}">Mở</a>
             <a class="btn btn-intent" href="${intentUrl}">Intent</a>
-            <a class="btn btn-store" href="${storeUrl}">Store</a>
-            <button class="btn btn-ios" data-scheme="${url}" data-store="${v.iosStoreUrl}">iOS</button>
+            <button class="btn btn-store" data-scheme="${url}" data-intent-store="${storeUrl}" data-ios-store="${v.iosStoreUrl}">Store</button>
             <button class="btn btn-copy" data-url="${url}">Copy</button>
           </div>
         </div>
       `;
     }).join("");
 
-    list.querySelectorAll(".btn-ios").forEach(b => {
-      b.addEventListener("click", () => {
-        openIosWithFallback(b.dataset.scheme, b.dataset.store);
+    list.querySelectorAll(".btn-store").forEach(b => {
+      b.addEventListener("click", e => {
+        e.preventDefault();
+        openWithStoreFallback(b.dataset.scheme, b.dataset.intentStore, b.dataset.iosStore);
       });
     });
 
