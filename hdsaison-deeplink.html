@@ -198,10 +198,20 @@
     return "other";
   }
 
-  function openWithStoreFallback(schemeUrl, intentStoreUrl, iosStoreUrl) {
+  function toItmsApps(httpsUrl) {
+    return httpsUrl.replace(/^https?:\/\//, "itms-apps://");
+  }
+
+  function openWithStoreFallback(schemeUrl, pkgName, iosStoreUrl) {
     const platform = detectPlatform();
     if (platform === "android") {
-      window.location.href = intentStoreUrl;
+      const marketUrl = `market://details?id=${pkgName}`;
+      const m = schemeUrl.match(/^hdsaison:\/\/(.*)$/);
+      const fallback = encodeURIComponent(marketUrl);
+      const intentUrl = m
+        ? `intent://${m[1]}#Intent;scheme=hdsaison;package=${pkgName};S.browser_fallback_url=${fallback};end`
+        : schemeUrl;
+      window.location.href = intentUrl;
       return;
     }
     if (platform === "ios") {
@@ -209,10 +219,11 @@
         alert("Vui lòng nhập iOS App Store URL trước (cần numeric App ID).");
         return;
       }
+      const nativeStore = toItmsApps(iosStoreUrl);
       const start = Date.now();
       const timer = setTimeout(() => {
         if (Date.now() - start < 2000 && !document.hidden) {
-          window.location.href = iosStoreUrl;
+          window.location.href = nativeStore;
         }
       }, 1500);
       window.addEventListener("pagehide", () => clearTimeout(timer), { once: true });
@@ -228,13 +239,6 @@
     return `intent://${m[1]}#Intent;scheme=hdsaison;end`;
   }
 
-  function toIntentWithStore(url, pkgName) {
-    const m = url.match(/^hdsaison:\/\/(.*)$/);
-    if (!m) return url;
-    const fallback = encodeURIComponent(`https://play.google.com/store/apps/details?id=${pkgName}`);
-    return `intent://${m[1]}#Intent;scheme=hdsaison;package=${pkgName};S.browser_fallback_url=${fallback};end`;
-  }
-
   function withLogin(url, isLogin) {
     if (!isLogin) return url;
     const sep = url.includes("?") ? "&" : "?";
@@ -248,7 +252,6 @@
     list.innerHTML = items.map((it, i) => {
       const url = withLogin(it.u(v), isLogin);
       const intentUrl = toIntent(url);
-      const storeUrl = toIntentWithStore(url, v.pkgName);
       return `
         <div class="item">
           <div class="title">${it.t} <span class="status ok">Login</span></div>
@@ -257,7 +260,7 @@
           <div class="actions">
             <a class="btn btn-open" href="${url}">Mở</a>
             <a class="btn btn-intent" href="${intentUrl}">Intent</a>
-            <button class="btn btn-store" data-scheme="${url}" data-intent-store="${storeUrl}" data-ios-store="${v.iosStoreUrl}">Store</button>
+            <button class="btn btn-store" data-scheme="${url}" data-pkg="${v.pkgName}" data-ios-store="${v.iosStoreUrl}">Store</button>
             <button class="btn btn-copy" data-url="${url}">Copy</button>
           </div>
         </div>
@@ -267,7 +270,7 @@
     list.querySelectorAll(".btn-store").forEach(b => {
       b.addEventListener("click", e => {
         e.preventDefault();
-        openWithStoreFallback(b.dataset.scheme, b.dataset.intentStore, b.dataset.iosStore);
+        openWithStoreFallback(b.dataset.scheme, b.dataset.pkg, b.dataset.iosStore);
       });
     });
 
