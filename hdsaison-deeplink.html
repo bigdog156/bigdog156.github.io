@@ -118,6 +118,7 @@
   .btn-open { background: #0066cc; color: #fff; }
   .btn-intent { background: #34c759; color: #fff; }
   .btn-store { background: #ff9500; color: #fff; }
+  .btn-ios { background: #000; color: #fff; }
   .btn-copy { background: #e5e5ea; color: #1d1d1f; }
   .status {
     display: inline-block;
@@ -133,7 +134,7 @@
 </head>
 <body>
   <h1>HDSaison Deeplink Test (Android)</h1>
-  <div class="sub">Bấm <b>Mở</b> để test scheme trực tiếp, <b>Intent</b> để dùng Android intent://, hoặc <b>Store</b> để test khi app chưa cài (tự bật Play Store).</div>
+  <div class="sub">Bấm <b>Mở</b> test scheme, <b>Intent</b> dùng Android intent://, <b>Store</b> fallback Play Store (Android), <b>iOS</b> fallback App Store (iOS).</div>
 
   <div class="inputs">
     <label>ID đơn (loan id)</label>
@@ -148,6 +149,8 @@
     <input id="vipCode" value="VIP2026">
     <label>Package name Android (để fallback Play Store)</label>
     <input id="pkgName" value="vn.hdsaison.app" placeholder="vd: vn.hdsaison.app">
+    <label>iOS App Store URL (bundle id: com.hdsaison.lending — cần numeric App ID)</label>
+    <input id="iosStoreUrl" value="https://apps.apple.com/vn/app/hd-saison/id1589425903" placeholder="vd: https://apps.apple.com/vn/app/id1234567890">
 
     <div class="toggle-row">
       <div>
@@ -185,7 +188,23 @@
       cardPkgId: document.getElementById("cardPkgId").value.trim() || "CP001",
       vipCode: document.getElementById("vipCode").value.trim() || "VIP",
       pkgName: document.getElementById("pkgName").value.trim() || "vn.hdsaison.app",
+      iosStoreUrl: document.getElementById("iosStoreUrl").value.trim(),
     };
+  }
+
+  function openIosWithFallback(schemeUrl, storeUrl) {
+    if (!storeUrl) {
+      alert("Vui lòng nhập iOS App Store URL trước (cần numeric App ID).");
+      return;
+    }
+    const start = Date.now();
+    const timer = setTimeout(() => {
+      if (Date.now() - start < 2000 && !document.hidden) {
+        window.location.href = storeUrl;
+      }
+    }, 1500);
+    window.addEventListener("pagehide", () => clearTimeout(timer), { once: true });
+    window.location.href = schemeUrl;
   }
 
   function toIntent(url) {
@@ -224,11 +243,18 @@
             <a class="btn btn-open" href="${url}">Mở</a>
             <a class="btn btn-intent" href="${intentUrl}">Intent</a>
             <a class="btn btn-store" href="${storeUrl}">Store</a>
+            <button class="btn btn-ios" data-scheme="${url}" data-store="${v.iosStoreUrl}">iOS</button>
             <button class="btn btn-copy" data-url="${url}">Copy</button>
           </div>
         </div>
       `;
     }).join("");
+
+    list.querySelectorAll(".btn-ios").forEach(b => {
+      b.addEventListener("click", () => {
+        openIosWithFallback(b.dataset.scheme, b.dataset.store);
+      });
+    });
 
     list.querySelectorAll(".btn-copy").forEach(b => {
       b.addEventListener("click", () => {
