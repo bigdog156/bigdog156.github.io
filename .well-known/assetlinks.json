@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.finos.hdsaison.uat",
+      "sha256_cert_fingerprints": [
+        "7B:B5:F2:38:1A:C2:63:46:2F:72:E2:5C:5D:3C:03:47:BC:A5:F1:AA:A3:5F:30:E0:61:CA:00:FE:CF:B4:F6:73"
+      ]
+    }
+  }
+]

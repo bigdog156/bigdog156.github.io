@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["9KK9ZMZZN5.com.hdsaison.lending"],
+        "components": [
+          { "/": "/loans", "?": { "id": "?*" } },
+          { "/": "/home",  "?": { "tab": "?*" } },
+          { "/": "/card",  "?": { "id": "?*" } }
+        ]
+      }
+    ]
+  }
+}
