@@ -89,11 +89,11 @@
     return "other";
   }
 
-  function toIntentAndroid(scheme, pkg) {
+  function toIntentAndroid(scheme) {
     const m = scheme.match(/^hdsaison:\/\/(.*)$/);
     if (!m) return scheme;
-    const fallback = encodeURIComponent(`market://details?id=${pkg}`);
-    return `intent://${m[1]}#Intent;scheme=hdsaison;package=${pkg};S.browser_fallback_url=${fallback};end`;
+    const fallback = encodeURIComponent(`market://details?id=${ANDROID_PKG}`);
+    return `intent://${m[1]}#Intent;scheme=hdsaison;S.browser_fallback_url=${fallback};end`;
   }
 
   function toItmsApps(httpsUrl) {
@@ -109,7 +109,7 @@
     document.getElementById("platformInfo").textContent = "Thiết bị: " + platform;
 
     if (platform === "android") {
-      btnOpen.href = toIntentAndroid(deeplink, ANDROID_PKG);
+      btnOpen.href = toIntentAndroid(deeplink);
       btnStore.href = `market://details?id=${ANDROID_PKG}`;
     } else if (platform === "ios") {
       btnOpen.href = deeplink;
@@ -124,7 +124,7 @@
     const platform = detectPlatform();
 
     if (platform === "android") {
-      window.location.href = toIntentAndroid(deeplink, ANDROID_PKG);
+      window.location.href = toIntentAndroid(deeplink);
       setTimeout(() => showManual(platform), 2500);
       return;
     }
