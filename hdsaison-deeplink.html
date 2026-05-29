@@ -264,7 +264,7 @@
       return `
         <div class="item">
           <div class="title">${it.t} <span class="status ok">Login</span></div>
-          <div class="url" id="url-${i}">${url}</div>
+          <div class="url" id="url-${i}">${toUniversalLink(url)}</div>
           ${it.note ? `<div style="font-size:12px;color:#666;margin-bottom:8px">${it.note}</div>` : ""}
           <div class="actions">
             <a class="btn btn-open" href="${url}">Mở</a>
