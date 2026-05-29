@@ -239,6 +239,15 @@
     return `intent://${m[1]}#Intent;scheme=hdsaison;end`;
   }
 
+  // Universal Link / App Link form — what users should share & copy.
+  // hdsaison://home?tab=cashLoan -> https://bigdog156.github.io/home?tab=cashLoan
+  const UNIVERSAL_HOST = "https://bigdog156.github.io";
+  function toUniversalLink(url) {
+    const m = url.match(/^hdsaison:\/\/(.*)$/);
+    if (!m) return url;
+    return `${UNIVERSAL_HOST}/${m[1]}`;
+  }
+
   function withLogin(url, isLogin) {
     if (!isLogin) return url;
     const sep = url.includes("?") ? "&" : "?";
@@ -261,7 +270,7 @@
             <a class="btn btn-open" href="${url}">Mở</a>
             <a class="btn btn-intent" href="${intentUrl}">Intent</a>
             <button class="btn btn-store" data-scheme="${url}" data-pkg="${v.pkgName}" data-ios-store="${v.iosStoreUrl}">Store</button>
-            <button class="btn btn-copy" data-url="${url}">Copy</button>
+            <button class="btn btn-copy" data-url="${toUniversalLink(url)}">Copy link</button>
           </div>
         </div>
       `;
@@ -278,7 +287,7 @@
       b.addEventListener("click", () => {
         navigator.clipboard.writeText(b.dataset.url);
         b.textContent = "Copied!";
-        setTimeout(() => b.textContent = "Copy", 1200);
+        setTimeout(() => b.textContent = "Copy link", 1200);
       });
     });
   }
